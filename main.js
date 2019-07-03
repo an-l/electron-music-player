@@ -1,23 +1,87 @@
-const {app, BrowserWindow} = require('electron')
-const path = require('path')
+const {app, BrowserWindow, ipcMain, dialog} = require('electron')
 
 let mainWindow
+let addMusicWindow
+
+class appWindow extends BrowserWindow{
+    constructor(config, filePath) {
+        let baseConfig = {
+            width: 800,
+            height: 600,
+            show: false,
+            webPreferences: {
+                nodeIntegration: true
+            }
+        }
+        super({
+            ...baseConfig,
+            ...config
+        });
+        
+        this.loadFile(filePath)
+
+        this.once('ready-to-show', () => {
+            this.show();
+        })
+    }
+}
 
 function createWindow () {
-    mainWindow = new BrowserWindow({
+    mainWindow = new appWindow({
         width: 800,
         height: 600,
         webPreferences: {
-            nodeIntegration: true
+            nodeIntegration: true,
+            // devTools: true
         }
-    })
+    }, './renderer/index/index.html')
 
-    mainWindow.loadFile('index.html')
-
+    // mainWindow.webContents.openDevTools();
 
     mainWindow.on('closed', function () {
         mainWindow = null
     })
+
+    ipcMain.on('open-add-music-window', () => {
+        console.log('open-add-music-window');
+        if (!addMusicWindow) {
+            createAddMusicWindow();
+        }
+    });
+    
+}
+
+function createAddMusicWindow() {
+    addMusicWindow = new appWindow({
+        width: 500,
+        height: 400,
+        webPreferences: {
+            nodeIntegration: true,
+            devTools: true
+        },
+        parent: mainWindow
+    }, './renderer/add/add.html')
+
+    addMusicWindow.webContents.openDevTools();
+
+    addMusicWindow.on('closed', function () {
+        addMusicWindow = null
+    })
+
+    ipcMain.on('open-file-dialog', (event) => {
+        dialog.showOpenDialog({
+            title: '选择音乐',
+            filters: [
+                { name: 'Music', extensions: ['mp3', 'wav', 'flac'] },
+            ],
+            properties: ['openFile', 'multiSelections'] 
+        }, (files)  => {
+            console.log('filePaths: ', files);
+            if (files) {
+                event.sender.send('selected-file', files);
+            }
+        })
+    });
 }
 
 app.on('ready', createWindow)

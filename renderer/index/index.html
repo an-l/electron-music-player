@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>我的播放器</title>
+    <style>
+        html,
+        body {
+            -webkit-app-region: drag;
+            -webkit-user-select: none;
+        }
+        .container {
+            margin: 20px 0;
+            padding: 0 40px;
+            -webkit-app-region: no-drag;
+        }
+        .title {
+            margin: 0 0 30px;
+            font-weight: normal;
+            font-size: 25px;
+        }
+        .add-music-btn {
+            padding: 10px 0;
+            width: 100%;
+            background: purple;
+            color: #fff;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">我的播放器</h1>
+        <button id="addMusicBtn" class="add-music-btn">添加歌曲到曲库</button>
+    </div>
+
+    <script>
+        require('./index.js')
+    </script>
+</body>
+</html>
