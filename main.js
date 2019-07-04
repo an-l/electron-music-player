@@ -11,7 +11,8 @@ class appWindow extends BrowserWindow{
             show: false,
             webPreferences: {
                 nodeIntegration: true
-            }
+            },
+            titleBarStyle: 'hiddenInset'
         }
         super({
             ...baseConfig,
@@ -28,15 +29,15 @@ class appWindow extends BrowserWindow{
 
 function createWindow () {
     mainWindow = new appWindow({
-        width: 800,
+        width: 500,
         height: 600,
         webPreferences: {
             nodeIntegration: true,
-            // devTools: true
+            devTools: true
         }
     }, './renderer/index/index.html')
 
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
     mainWindow.on('closed', function () {
         mainWindow = null
@@ -52,6 +53,9 @@ function createWindow () {
 }
 
 function createAddMusicWindow() {
+    if (addMusicWindow) {
+        return;
+    }
     addMusicWindow = new appWindow({
         width: 500,
         height: 400,
@@ -62,12 +66,25 @@ function createAddMusicWindow() {
         parent: mainWindow
     }, './renderer/add/add.html')
 
-    addMusicWindow.webContents.openDevTools();
+    // addMusicWindow.webContents.openDevTools();
 
     addMusicWindow.on('closed', function () {
         addMusicWindow = null
     })
+}
+initIpc();
 
+app.on('ready', createWindow)
+
+app.on('window-all-closed', function () {
+  if (process.platform !== 'darwin') app.quit()
+})
+
+app.on('activate', function () {
+  if (mainWindow === null) createWindow()
+})
+
+function initIpc() {
     ipcMain.on('open-file-dialog', (event) => {
         dialog.showOpenDialog({
             title: '选择音乐',
@@ -82,14 +99,12 @@ function createAddMusicWindow() {
             }
         })
     });
+    
+    ipcMain.on('add-music', (event, files) => {
+        console.log('main - add-music');
+        mainWindow.webContents.send('add-music', files);
+    
+        addMusicWindow.close();
+    }); 
 }
 
-app.on('ready', createWindow)
-
-app.on('window-all-closed', function () {
-  if (process.platform !== 'darwin') app.quit()
-})
-
-app.on('activate', function () {
-  if (mainWindow === null) createWindow()
-})
