@@ -1,0 +1,33 @@
+@font-face {font-family: "iconfont";
+  src: url('iconfont.eot?t=1562236125796'); /* IE9 */
+  src: url('iconfont.eot?t=1562236125796#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('data:application/x-font-woff2;charset=utf-8;base64,d09GMgABAAAAAAOkAAsAAAAACNwAAANYAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHEIGVgCDIgqEfIQ4ATYCJAMUCwwABCAFhG0HVhvCBxEVnFnIfhw457MgV++6/MlFHqFJ+s9BgG3ZhARKQ03s2RNT/7noWjlX1ZNRJ0xRdnzfow9sSqG53FMA/M8x0yU2UP7ne3OpDFrbRpGYuLfnydV37UV2pynoZwE7uz5sTuDTEIAmigxE6bKVa2OjkHYJQHTu0K4Ftk+HSiEJbKUVc1EhpmNiGxOMs1RMMz9fvGEQNhiYEulg9bZlWlP8xYgXR+Rw1/DGOgJ+fRZAuAYSyAAUiJaxtsZIO5aBRH+YFTmAhSo0Xox6ccTlqpNr6qCfMo1/eAYSBcJCknlAUZykarb4qgZB8pHgkJ0Xo6BBkvwIBDtEZuoXNOAF7AMRjqRIMAslCoWM8IBU0sqgENVLi7lBenYAKnlOoEOeFywOzG149Wrta9fq3LhR7/r1/oqkrsXxDnL16qC4r9So5dzZAcacOcGt5o1oLupk0TbVHLeJTjm3nqvupHUznuL7AI0jFu5P8li9NwTH02vienpU2GTBvkTPdQfCm/Xr0IiNjT0aeu5YNn++1TynuWWw1e4cq7kvZ//yfervX7VPZuscTeTmOE+yl8hLlyTES4gDEY0SksWzL8oZnHxdfrhvdf/R25pv6+M2/PPa/lXYvnnn9J2nt9/E84K0O2E3t+wc22puly9fXecvL748X1cv//Ogl69XjNW8MESH5k4/Pj031HIXNrdiYg7OLLc92PWCHwCug1KuVdxMfJTDpc8t8jeMcfoUNvMu/GY7CoBbpb7dg9d1UJE/BRsDBP4Nwc9Zpr5CSW+qd7HKe9tNCjy7MQCNBlxILj/u16MIzJ0OAptAFwzciASJTQJSYTPAxKEALGyKgSadctcd/OmJRCh3II0xDAh82AYGXhwAiQ/nkAp7D0yCeAcWPkKCpq7wv6NDkuigSxEYSmBJ/2k1KTrFKBcr84b57RV7hSblBS5rkPqmCyaviOA6jpTPPIg4cpwCTczz4H2izGmDkWYRyWPburh3akwK1YVSDCWwpP+0mhSd3lsuoY+/YX57xSklP6wvcFnHp77pciCvspirZF+Wl888iDja5jgFmmCBl2OJcvy6DUaapUQkjy1bzeWVNe0rwjYeAjTSvU1hCCmUMIWF092/S21WNh4uTv1PH2UNSG85WHgIqgo=') format('woff2'),
+  url('iconfont.woff?t=1562236125796') format('woff'),
+  url('iconfont.ttf?t=1562236125796') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+ */
+  url('iconfont.svg?t=1562236125796#iconfont') format('svg'); /* iOS 4.1- */
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-plus-circle:before {
+  content: "\e781";
+}
+
+.icon-play-circle:before {
+  content: "\e782";
+}
+
+.icon-timeout:before {
+  content: "\e783";
+}
+
+.icon-delete:before {
+  content: "\e7c3";
+}
+

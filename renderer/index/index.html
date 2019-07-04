@@ -5,15 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>我的播放器</title>
+    <link rel="stylesheet" href="../../assets/iconfont/iconfont.css">
+    <link rel="stylesheet" href="../../node_modules/bootstrap/dist/css/bootstrap.min.css">
     <style>
         html,
         body {
+            padding-top: 20px;
             -webkit-app-region: drag;
             -webkit-user-select: none;
         }
         .container {
-            margin: 20px 0;
-            padding: 0 40px;
             -webkit-app-region: no-drag;
         }
         .title {
@@ -21,20 +22,98 @@
             font-weight: normal;
             font-size: 25px;
         }
-        .add-music-btn {
-            padding: 10px 0;
-            width: 100%;
-            background: purple;
-            color: #fff;
-            font-size: 16px;
+        .music-list {
+            margin: 30px 0;
+            padding: 0;
+            height: 40vh;
+            overflow-y: scroll;
             border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .music-list .music-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 0;
+            margin: 0 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .music-list .music-item:last-child {
+            border: none;
+        }
+        .music-list .music-controller {
+        }
+        .music-list .music-controller .iconfont{
+            display: inline-block;
+            font-size: 30px;
+            cursor: pointer;
+            transition: color .2s ease-in-out;
+        }
+        .music-list .music-controller .play-music-btn{
+            margin-right: 5px;
+            color: #17a2b8;
+        }
+        .music-list .music-controller .play-music-btn:hover{
+            color: #088ca0;
+        }
+        .music-list .music-controller .del-music-btn{
+            color: #ff5722;
+        }
+        
+        .music-list .music-controller .del-music-btn:hover{
+            color: #f71100;
+        }
+        .music-player-wrap {
+            border-top: 1px solid #ddd;
+            padding: 20px;
+        }
+
+        .playting-wrap {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .progress-wrap {}
+        .progress-wrap .progress {
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1 class="title">我的播放器</h1>
-        <button id="addMusicBtn" class="add-music-btn">添加歌曲到曲库</button>
+        <button id="addMusicBtn" class="btn btn-primary btn-lg btn-block">添加歌曲到曲库</button>
+        <ul id="musicList" class="music-list">
+            <li class="music-item" data-path="${path}">
+                <div class="music-item-name">${Path.basename(path)}</div>
+                <div class="music-controller">
+                    <i class="play-music-btn iconfont icon-play-circle"></i>
+                    <i class="del-music-btn iconfont icon-delete"></i>
+                </div>
+            </li>
+        </ul>
+        <div class="music-player-wrap">
+            <audio id="musicPlayer" src="">
+                您的浏览器不支持 audio 标签。
+            </audio>
+            <div class="playting-wrap">
+                <div class="music-name-wrap">
+                    正在播放：
+                    <span id="musicName"></span>
+                </div>
+                <div class="music-time">
+                    <span id="musicNowTime">00:00</span>
+                    <span>/</span>
+                    <span id="musicAllTime">00:00</span>
+                </div>
+            </div>
+            <div class="progress-wrap">
+                <div id="musicPercent" class="play-percent">0%</div>
+                <div id="progressWrap" class="progress">
+                    <div id="progress" class="progress-bar bg-info" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>

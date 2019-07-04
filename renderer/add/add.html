@@ -5,37 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>添加歌曲</title>
+    <link rel="stylesheet" href="../../assets/iconfont/iconfont.css">
+    <link rel="stylesheet" href="../../node_modules/bootstrap/dist/css/bootstrap.min.css">
     <style>
         html,
         body {
+            padding-top: 20px;
             -webkit-app-region: drag;
             -webkit-user-select: none;
         }
         .container {
-            margin: 20px 0;
-            padding: 0 40px;
             -webkit-app-region: no-drag;
         }
         .title {
-            margin: 0 0 30px;
+            margin: 20px 0 30px;
             font-weight: normal;
             font-size: 25px;
         }
-        .choose-music-btn {
-            padding: 10px 0;
-            width: 100%;
-            background: skyblue;
-            color: #fff;
-            font-size: 16px;
+        .music-list {
+            margin: 30px 0;
+            padding: 0;
+        }
+        .music-list .music-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 20px;
             border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .music-list .music-controller .iconfont{
+            display: inline-block;
+            font-size: 30px;
+            cursor: pointer;
+        }
+       
+        .music-list .music-controller .del-music-btn{
+            color: #f44336;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="title">我的播放器</h1>
-        <button id="chooseMusicBtn" class="choose-music-btn">选择音乐</button>
-        <p id="test"></p>
+        <h1 class="title">添加歌曲</h1>
+        <ul id="musicList" class="music-list list-group"></ul>
+        <button id="chooseMusicBtn" class="btn btn-outline-primary btn-lg btn-block">选择音乐</button>
+        <button id="addMusicBtn" class="btn btn-secondary btn-lg btn-block">导入音乐</button>
     </div>
 
     <script>
