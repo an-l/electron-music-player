@@ -40,14 +40,18 @@ class Index {
             if(e.target.classList.contains(musicItemClass)) {
                 let parentNode = e.target.parentNode.parentNode;
                 let musicPath = parentNode.dataset.path;
+                if(!parentNode.classList.contains('active')) {
+                    parentNode.classList.add('active');
+                }
                 this.playMusic(musicPath);
             }
-        })
+        });
 
         this.dom.musicPlayer.addEventListener('loadedmetadata', (e) => {
             let target = e.target;
             this.dom.musicAllTime.innerHTML = transTime(target.duration);
-        })
+        });
+
         this.dom.musicPlayer.addEventListener('timeupdate', (e) => {
             let target = e.target;
             let currentTime = target.currentTime;

@@ -41,8 +41,12 @@
         .music-list .music-item:last-child {
             border: none;
         }
-        .music-list .music-controller {
+
+        .music-list .music-item.active {
+            color: #ff5722;
         }
+
+
         .music-list .music-controller .iconfont{
             display: inline-block;
             font-size: 30px;
@@ -84,7 +88,7 @@
         <h1 class="title">我的播放器</h1>
         <button id="addMusicBtn" class="btn btn-primary btn-lg btn-block">添加歌曲到曲库</button>
         <ul id="musicList" class="music-list">
-            <li class="music-item" data-path="${path}">
+            <li class="music-item active" data-path="${path}">
                 <div class="music-item-name">${Path.basename(path)}</div>
                 <div class="music-controller">
                     <i class="play-music-btn iconfont icon-play-circle"></i>
