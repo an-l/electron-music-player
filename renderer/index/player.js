@@ -2,6 +2,7 @@ const { ipcRenderer } = require('electron');
 const Path = require('path')
 
 const MUSIC_PLAY_BTN_DOM_CLASS = 'play-music-btn'
+const MUSIC_DEL_BTN_DOM_CLASS = 'del-music-btn'
 const MUSIC_ITEM_DOM_CLASS = 'music-item'
 
 module.exports = class Player {
@@ -36,7 +37,23 @@ module.exports = class Player {
     }
 
     initEvent() {
-        this.dom.musicList.addEventListener('click', this.onClickPlayMusic.bind(this), true);
+        this.dom.musicList.addEventListener('click', (e) => {
+            // 如果点击的播放按钮
+            if(e.target.classList.contains(MUSIC_PLAY_BTN_DOM_CLASS)) {
+                let parentNode = e.target.parentNode.parentNode;
+
+                this.onClickPlayMusic(parentNode)
+                return;
+            }
+
+            // 如果点击的删除按钮
+            if(e.target.classList.contains(MUSIC_DEL_BTN_DOM_CLASS)) {
+                let parentNode = e.target.parentNode.parentNode;
+
+                this.onClickDelMusic(parentNode)
+                return;
+            }
+        });
 
         this.dom.musicPlayer.addEventListener('loadedmetadata', (e) => {
             let target = e.target;
@@ -47,14 +64,12 @@ module.exports = class Player {
             let target = e.target;
             let currentTime = target.currentTime;
             let duration = target.duration;
-
-            if(!duration || isNaN(duration)) {
-                duration = 0;
+            
+            // 如果当前不是暂停状态
+            if(!e.target.paused) {
+                this.renderMusicProgress(currentTime, duration)
             }
 
-            this.dom.musicNowTime.innerHTML = this.transTime(currentTime);
-            let playingPercent = Math.floor(currentTime / duration * 100);
-            this.renderMusicProgress(playingPercent)
         })
 
         this.dom.musicPlayer.addEventListener('ended', this.onPlayMusicEnd.bind(this));
@@ -86,24 +101,28 @@ module.exports = class Player {
 
     /**
      * 点击播放音乐
-     * @param {Object} e 事件对象
+     * @param {Object} node dom节点
      */
-    onClickPlayMusic(e) {
+    onClickPlayMusic(node) {
+        this.dom.musicList.querySelectorAll(`.${MUSIC_ITEM_DOM_CLASS}`).forEach(dom => {
+            dom && dom.classList.remove('active');
+        })
         
-        if(e.target.classList.contains(MUSIC_PLAY_BTN_DOM_CLASS)) {
-            let parentNode = e.target.parentNode.parentNode;
-            this.dom.musicList.querySelectorAll(`.${MUSIC_ITEM_DOM_CLASS}`).forEach(dom => {
-                dom && dom.classList.remove('active');
-            })
-            debugger;
-            
-            if(!parentNode.classList.contains('active')) {
-                parentNode.classList.add('active');
-            }
-
-            const {path, index} = parentNode.dataset;
-            this.playMusic(path, index);
+        if(!node.classList.contains('active')) {
+            node.classList.add('active');
         }
+
+        const {path, index} = node.dataset;
+        this.playMusic(path, index);
+    }
+
+    /**
+     * 点击删除音乐
+     * @param {Object} node dom节点
+     */
+    onClickDelMusic(node) {
+        const {index} = node.dataset;
+        this.delMusic(index);
     }
     /**
      * 播放音乐结束
@@ -135,12 +154,21 @@ module.exports = class Player {
         this.dom.musicList.innerHTML = parseHtml;
     }
 
-    renderMusicProgress(percent) {
-        if(!percent || isNaN(percent)) {
-            percent = 0;
+    renderMusicProgress(currentTime = 0, duration = 0) {
+        if(!duration || isNaN(duration)) {
+            duration = 0;
         }
-        this.dom.musicPercent.innerHTML = `${percent}%`;
-        this.dom.progress.style.width = `${percent}%`;
+
+        this.dom.musicNowTime.innerHTML = this.transTime(currentTime);
+        this.dom.musicAllTime.innerHTML = this.transTime(duration);
+        let playingPercent = Math.floor(currentTime / duration * 100);
+
+
+        if(!playingPercent || isNaN(playingPercent)) {
+            playingPercent = 0;
+        }
+        this.dom.musicPercent.innerHTML = `${playingPercent}%`;
+        this.dom.progress.style.width = `${playingPercent}%`;
     }
 
     playMusic(path, index) {
@@ -150,6 +178,23 @@ module.exports = class Player {
         this.dom.musicPlayer.play();
 
         this.dom.musicName.innerHTML = Path.basename(path);
+    }
+
+    delMusic(index) {
+        // 如果当前删除歌曲正在播放中，停止播放
+        if(index === this.currentPlayMusicInfo.index) {
+            this.dom.musicPlayer.pause();
+        }
+
+        this.musicPathList.splice(index, 1);
+       
+        this.currentPlayMusicInfo.path = '';
+        this.currentPlayMusicInfo.index = 0;
+
+        this.dom.musicName.innerHTML = '';
+
+        this.renderMusicList(this.musicPathList);
+        this.renderMusicProgress();
     }
 
     transTime(time) {
