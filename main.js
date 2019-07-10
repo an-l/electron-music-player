@@ -33,18 +33,17 @@ function createWindow () {
         height: 600,
         webPreferences: {
             nodeIntegration: true,
-            devTools: true
+            // devTools: true
         }
     }, './renderer/index/index.html')
 
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
 
     mainWindow.on('closed', function () {
         mainWindow = null
     })
 
     ipcMain.on('open-add-music-window', () => {
-        console.log('open-add-music-window');
         if (!addMusicWindow) {
             createAddMusicWindow();
         }
@@ -61,7 +60,7 @@ function createAddMusicWindow() {
         height: 400,
         webPreferences: {
             nodeIntegration: true,
-            devTools: true
+            // devTools: true
         },
         parent: mainWindow
     }, './renderer/add/add.html')
@@ -93,7 +92,6 @@ function initIpc() {
             ],
             properties: ['openFile', 'multiSelections'] 
         }, (files)  => {
-            console.log('filePaths: ', files);
             if (files) {
                 event.sender.send('selected-file', files);
             }
@@ -101,7 +99,6 @@ function initIpc() {
     });
     
     ipcMain.on('add-music', (event, files) => {
-        console.log('main - add-music');
         mainWindow.webContents.send('add-music', files);
     
         addMusicWindow.close();

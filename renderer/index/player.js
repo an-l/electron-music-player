@@ -1,5 +1,6 @@
 const { ipcRenderer } = require('electron');
 const Path = require('path')
+const Store = require('../../store/index.js')
 
 const MUSIC_PLAY_BTN_DOM_CLASS = 'play-music-btn'
 const MUSIC_DEL_BTN_DOM_CLASS = 'del-music-btn'
@@ -20,20 +21,11 @@ module.exports = class Player {
         }
 
         this.currentPlayMusicInfo = {
-            index: 0,
+            id: 0,
             path: ""
         };
-        this.musicPathList = [
-            '/Users/li/Documents/音乐/rockstar (feat. 21 Savage).mp3',
-            '/Users/li/Documents/音乐/rockstar (feat. 21 Savage).mp3',
-            '/Users/li/Documents/音乐/rockstar (feat. 21 Savage).mp3',
-            '/Users/li/Documents/音乐/rockstar (feat. 21 Savage).mp3',
-            '/Users/li/Documents/音乐/rockstar (feat. 21 Savage).mp3',
-            '/Users/li/Documents/音乐/rockstar (feat. 21 Savage).mp3',
-            '/Users/li/Documents/音乐/rockstar (feat. 21 Savage).mp3',
-            '/Users/li/Documents/音乐/rockstar (feat. 21 Savage).mp3',
-        ];
-        this.renderMusicList(this.musicPathList);
+        this.musicPathList = Store.getTrack() || [];
+        this.renderMusicList(this.musicPathList)
         this.initEvent();
     }
 
@@ -50,8 +42,9 @@ module.exports = class Player {
             // 如果点击的删除按钮
             if(e.target.classList.contains(MUSIC_DEL_BTN_DOM_CLASS)) {
                 let parentNode = e.target.parentNode.parentNode;
+                let {id} = parentNode.dataset;
 
-                this.onClickDelMusic(parentNode)
+                this.delMusic(id);
                 return;
             }
         });
@@ -105,7 +98,6 @@ module.exports = class Player {
 
             // 如果点击的播放按钮
             if(e.target.classList.contains('play-btn')) {
-                debugger;
                 // 如果当前是暂停状态
                 if(this.dom.musicPlayer.paused && this.currentPlayMusicInfo.path !== '') {
                     let parentNode = e.target.parentNode;
@@ -118,12 +110,8 @@ module.exports = class Player {
             }
         })
 
-        ipcRenderer.on('add-music', (event, files) => {
-            console.log('index - add-music', files);
-            this.musicPathList = [
-                ...this.musicPathList,
-                ...files
-            ];
+        ipcRenderer.on('add-music', (event) => {
+            this.musicPathList = Store.getTrack();
 
             this.renderMusicList(this.musicPathList)
         })
@@ -145,24 +133,19 @@ module.exports = class Player {
         this.dom.musicPlayerController.querySelector('.play-btn').classList.remove('active');
         this.dom.musicPlayerController.querySelector('.pause-btn').classList.add('active');
 
-        const {path, index} = node.dataset;
-        this.playMusic(path, index);
+        const {path, id} = node.dataset;
+        this.playMusic(path, id);
     }
 
-    /**
-     * 点击删除音乐
-     * @param {Object} node dom节点
-     */
-    onClickDelMusic(node) {
-        const {index} = node.dataset;
-        this.delMusic(index);
-    }
     /**
      * 播放音乐结束
      * @param {Object} e 事件对象
      */
     onPlayMusicEnd(e) {
-        let {index} = this.currentPlayMusicInfo;
+        let {id} = this.currentPlayMusicInfo;
+
+        let index = this.musicPathList.map(item => item.id).indexOf(id);
+        index = index !== -1 ? index : 0;
 
         if (index < this.musicPathList.length) {
             index++;
@@ -176,11 +159,14 @@ module.exports = class Player {
         }
     }
 
-    renderMusicList(list) {
-        let parseHtml = list.reduce(((html, path, index) => 
+    renderMusicList(list = this.musicPathList) {
+        if(!list || !Array.isArray(list)) {
+            return;
+        }
+        let parseHtml = list.reduce(((html, item) => 
             html + 
-            `<li class="music-item" data-path="${path}" data-index="${index}">
-                <div class="music-item-name">${Path.basename(path)}</div>
+            `<li class="music-item" data-path="${item.path}" data-id="${item.id}">
+                <div class="music-item-name">${item.name}</div>
                 <div class="music-controller">
                     <i class="play-music-btn iconfont icon-play-circle"></i>
                     <i class="del-music-btn iconfont icon-delete"></i>
@@ -208,25 +194,26 @@ module.exports = class Player {
         this.dom.progress.style.width = `${playingPercent}%`;
     }
 
-    playMusic(path, index) {
+    playMusic(path, id) {
         this.currentPlayMusicInfo.path = path;
-        this.currentPlayMusicInfo.index = index;
+        this.currentPlayMusicInfo.id = id;
         this.dom.musicPlayer.src = path;
         this.dom.musicPlayer.play();
 
         this.dom.musicName.innerHTML = Path.basename(path);
     }
 
-    delMusic(index) {
+    delMusic(id) {
         // 如果当前删除歌曲正在播放中，停止播放
-        if(index === this.currentPlayMusicInfo.index) {
+        if(id === this.currentPlayMusicInfo.id) {
             this.dom.musicPlayer.pause();
         }
 
-        this.musicPathList.splice(index, 1);
+        this.musicPathList = this.musicPathList.filter(item => item.id !== id);
+        Store.delTrack(id);
        
         this.currentPlayMusicInfo.path = '';
-        this.currentPlayMusicInfo.index = 0;
+        this.currentPlayMusicInfo.id = 0;
 
         this.dom.musicName.innerHTML = '';
 

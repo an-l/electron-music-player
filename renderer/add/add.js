@@ -1,5 +1,6 @@
 const { ipcRenderer } = require('electron');
 const Path = require('path')
+const Store = require('../../store/index.js')
 
 class Add {
     constructor() {
@@ -18,17 +19,21 @@ class Add {
             ipcRenderer.send('open-file-dialog')
         })
         this.dom.addMusicBtn.addEventListener('click', () => {
-            ipcRenderer.send('add-music', this.musicPathList)
+            Store.addTrack(this.musicPathList);
+
+            ipcRenderer.send('add-music')
         })
 
         ipcRenderer.on('selected-file', (event, files) => {
-            console.log('selected-file: ', files);
             this.musicPathList = [...files];
             this.renderMusicList(this.musicPathList);
         })
     }
 
     renderMusicList(list) {
+        if(!list || !Array.isArray(list)) {
+            return;
+        }
         let parseHtml = list.reduce(((html, path) => 
             html + 
             `<li class="music-item" data-path="${path}">
