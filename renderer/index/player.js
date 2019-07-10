@@ -16,6 +16,7 @@ module.exports = class Player {
             musicPercent: document.querySelector('#musicPercent'),
             progress: document.querySelector('#progress'),
             progressWrap: document.querySelector('#progressWrap'),
+            musicPlayerController: document.querySelector('#musicPlayerController'),
         }
 
         this.currentPlayMusicInfo = {
@@ -88,6 +89,35 @@ module.exports = class Player {
             musicPlayerDom.play();
         })
 
+        this.dom.musicPlayerController.addEventListener('click', (e) => {
+            // 如果点击的暂停按钮
+            if(e.target.classList.contains('pause-btn')) {
+                // 如果当前不是暂停状态
+                if(!this.dom.musicPlayer.paused) {
+                    let parentNode = e.target.parentNode;
+                    e.target.classList.remove('active');
+                    parentNode.querySelector('.play-btn').classList.add('active');
+
+                    this.dom.musicPlayer.pause();
+                }
+                return;
+            }
+
+            // 如果点击的播放按钮
+            if(e.target.classList.contains('play-btn')) {
+                debugger;
+                // 如果当前是暂停状态
+                if(this.dom.musicPlayer.paused && this.currentPlayMusicInfo.path !== '') {
+                    let parentNode = e.target.parentNode;
+                    e.target.classList.remove('active');
+                    parentNode.querySelector('.pause-btn').classList.add('active');
+
+                    this.dom.musicPlayer.play();
+                }
+                return;
+            }
+        })
+
         ipcRenderer.on('add-music', (event, files) => {
             console.log('index - add-music', files);
             this.musicPathList = [
@@ -112,6 +142,9 @@ module.exports = class Player {
             node.classList.add('active');
         }
 
+        this.dom.musicPlayerController.querySelector('.play-btn').classList.remove('active');
+        this.dom.musicPlayerController.querySelector('.pause-btn').classList.add('active');
+
         const {path, index} = node.dataset;
         this.playMusic(path, index);
     }
@@ -135,7 +168,11 @@ module.exports = class Player {
             index++;
 
             let musicItems = document.querySelectorAll(`.${MUSIC_PLAY_BTN_DOM_CLASS}`);
-            musicItems && musicItems[index].dispatchEvent(new Event('click'));
+            if(musicItems && musicItems[index]) {
+                let parentNode = musicItems[index].parentNode.parentNode;
+
+                this.onClickPlayMusic(parentNode)
+            }
         }
     }
 
